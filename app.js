@@ -35,7 +35,7 @@ require('./passportConfig')(passport);
 //--------------------Start of Routes----------------------//
 app.get('/', async (req, res) => {
     console.log('hit')
-    res.json({isGood: 'Yes'})
+    res.render('index.ejs')
 })
 app.use('/user', require('./routes/user'));
 //--------------------End of Routes----------------------//
