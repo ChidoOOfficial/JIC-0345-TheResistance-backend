@@ -25,6 +25,10 @@ const UserProfileSchema = mongoose.Schema({
     HashedPassword: {
         type: String,
         require: true
+    },
+    SpecialID: {
+        type: String,
+        require: true
     }
 });
 
