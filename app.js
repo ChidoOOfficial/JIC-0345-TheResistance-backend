@@ -13,10 +13,12 @@ const session = require('express-session')
 app.use(bodyParser.json());
 app.set('view-engine', 'ejs')
 app.use(bodyParser.urlencoded({extended: true}))
-app.use(cors({
+cors_settings = {
     origin: "https://junior-design-resistence.herokuapp.com",
     credentials: true
-}));
+}
+
+app.use(cors());
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
