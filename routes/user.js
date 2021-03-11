@@ -39,8 +39,6 @@ router.post('/logout', (req, res) => {
     res.redirect('/user/login')
 })
 
-
-
 function makeid(length) {
     var result           = '';
     var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -103,6 +101,57 @@ router.post('/getprofile', async (req, res) => {
     res.json({userprolife: res})
 });
 
+router.get('/inventory', authentication.checkAuthenticated, async (req, res)=> {
+    inventory = await UserProfile.findById(req.user._id, {Inventory: 1})
+    res.json(inventory)
+})
+
+router.post('/inventory', authentication.checkAuthenticated, async (req, res)=> {
+    changes = req.body.Inventory 
+    if (changes == null) {
+        res.json({
+            success: true,
+            status: 'no changes made'
+        })
+    }
+
+    _inventory = (await UserProfile.findById(req.user._id, {Inventory: 1})).Inventory
+    inventory = []
+    
+    for(i=0; i < _inventory.length; i++) {
+        inventory.push({
+            Item: _inventory[i].Item,
+            Quantity: _inventory[i].Quantity
+        })
+    }
+
+    for (j = 0; j < changes.length; j++){
+        found = false
+        for (i=0; i < inventory.length; i++) {
+            if (inventory[i].Item == changes[j].Item) {
+                inventory[i].Quantity = changes[j].Quantity
+                found = true
+                break
+            }
+        }
+
+        if (!found) {
+            inventory.push({
+                Item: changes[j].Item,
+                Quantity: changes[j].Quantity
+            })
+        }
+    }
+
+    await UserProfile.updateOne({_id: req.user._id  }, { $set: {
+        Inventory: inventory
+    }})
+
+    res.json({
+        success: true,
+        status: 'changes made'
+    })
+})
 
 
 

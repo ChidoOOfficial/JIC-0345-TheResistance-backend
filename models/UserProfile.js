@@ -29,6 +29,18 @@ const UserProfileSchema = mongoose.Schema({
     SpecialID: {
         type: String,
         require: true
+    },
+    Inventory: {
+        type: [{
+            Item: {
+                type: String,
+                required: true
+            },
+            Quantity: {
+                type: Number,
+                required: true
+            }
+        }] 
     }
 });
 
