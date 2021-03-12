@@ -24,11 +24,11 @@ const UserProfileSchema = mongoose.Schema({
     }, //Account Type: student/teacher 
     HashedPassword: {
         type: String,
-        require: true
+        required: true
     },
     SpecialID: {
         type: String,
-        require: true
+        required: true
     },
     Inventory: {
         type: [{
@@ -41,6 +41,37 @@ const UserProfileSchema = mongoose.Schema({
                 required: true
             }
         }] 
+    },
+    Coins: {
+        type: Number,
+        default: 0
+    },
+    QuizScores: {
+        type: [
+            {
+                Topic: {
+                    type: String,
+                    required: true
+                },
+                ScoreHistory: {
+                    type: [
+                        {
+                            Date: {
+                                type: Date
+                            },
+                            Score: {
+                                type: Number
+                            }
+                        }
+                    ],
+                    required: true
+                },
+                PossibleScore: {
+                    type: Number,
+                    required: true
+                }
+            }
+        ]
     }
 });
 

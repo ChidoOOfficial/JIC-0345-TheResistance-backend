@@ -153,6 +153,168 @@ router.post('/inventory', authentication.checkAuthenticated, async (req, res)=> 
     })
 })
 
+router.get('/coins', authentication.checkAuthenticated, async (req, res)=> {
+    coins = await UserProfile.findById(req.user._id, {Coins: 1})
+    res.json(coins)
+})
+
+router.post('/coins', authentication.checkAuthenticated, async (req, res)=> {
+    coins = req.body.Coins
+    console.log(coins)
+    await UserProfile.updateOne({_id: req.user._id  }, { $set: {
+        Coins: coins
+    }})
+
+    res.json(
+        {
+            status: 'changed',
+            successful: true
+        }
+    )
+})
+
+router.post('/quizscore/latest', authentication.checkAuthenticated, async (req, res)=> {
+    topic = req.body.topic
+    quizscores = (await UserProfile.findById(req.user._id, {QuizScores: 1})).QuizScores
+    quiz = null
+
+    for (i=0; i<quizscores.length; i++){
+
+        if (quizscores[i].Topic == topic) {
+            quiz = quizscores[i]
+            break
+        }
+    }
+
+    if (quiz == null) {
+        res.json({
+            Topic: topic,
+            Status: 'No History'
+        })
+    }
+
+    quiz.ScoreHistory.sort(function(a, b) {
+        return new Date(a.Date).getTime() - new Date(b.Date).getTime();
+    })    
+
+    response = {
+        Score: quiz.ScoreHistory[quiz.ScoreHistory.length - 1].Score,
+        Date: quiz.ScoreHistory[quiz.ScoreHistory.length - 1].Date,
+        Topic: topic,
+        PossibleScore: quiz.PossibleScore
+    }
+
+    res.json(response)
+})
+
+router.post('/quizscore/all', authentication.checkAuthenticated, async (req, res)=> {
+    topic = req.body.topic
+    quizscores = (await UserProfile.findById(req.user._id, {QuizScores: 1})).QuizScores
+
+    quiz = null
+    for (i=0; i<quizscores.length; i++){
+        if (quizscores[i].Topic == topic) {
+            quiz = quizscores[i]
+            break
+        }
+    }
+
+    if (quiz == null) {
+        res.json({
+            Topic: topic,
+            Status: 'No History'
+        })
+    } else {
+        quiz.ScoreHistory.sort(function(a, b) {
+            return new Date(a.Date).getTime() - new Date(b.Date).getTime();
+        })
+
+        response = {
+            ScoreHistory: quiz.ScoreHistory,
+            Topic: topic,
+            PossibleScore: quiz.PossibleScore
+        }
+
+        res.json(response)
+    }
+})
+
+router.post('/quizscore/add', authentication.checkAuthenticated, async (req, res)=> {
+    topic = req.body.topic
+    score = req.body.score
+    possiblescore = req.body.possiblescore
+
+    quizscores = (await UserProfile.findById(req.user._id, {QuizScores: 1})).QuizScores
+    
+    if (quizscores == null) {
+        quizscores = []
+    }
+
+    found = false
+    quizInd = null 
+
+    for (i=0; i<quizscores.length; i++){
+        if (quizscores[i].Topic == topic) {
+            quizInd = i
+            found = true
+            break
+        }
+    }
+
+    if (!found) {
+        quizscores.push({
+            Topic:  topic,
+            PossibleScore: possiblescore,
+            ScoreHistory: []
+        })
+        quizInd = quizscores.length-1
+    }
+
+    quizscores[i].ScoreHistory.push({
+        Date: Date.now(),
+        Score: score
+    })
+    
+    await UserProfile.updateOne({_id: req.user._id  }, { $set: {
+        QuizScores: quizscores
+    }})
+
+    res.json({
+        successful: true
+    })
+})
+
+/**
+ * QuizResults: {
+        type: [
+            {
+                Topic: {
+                    type: String,
+                    required: true
+                },
+                ScoreHistory: {
+                    type: [
+                        {
+                            Date: {
+                                type: Date
+                            },
+                            Score: {
+                                type: Number
+                            }
+                        }
+                    ],
+                    required: true
+                },
+                PossibleScore: {
+                    type: Number,
+                    required: true
+                }
+            }
+        ]
+    }
+ */
+
+
 
 
 

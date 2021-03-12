@@ -13,6 +13,7 @@ const session = require('express-session')
 app.use(bodyParser.json());
 app.set('view-engine', 'ejs')
 app.use(bodyParser.urlencoded({extended: true}))
+
 cors_settings = {
     origin: "https://junior-design-resistence.herokuapp.com",
     credentials: true
