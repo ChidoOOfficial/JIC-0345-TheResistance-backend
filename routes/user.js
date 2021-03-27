@@ -284,36 +284,13 @@ router.post('/quizscore/add', authentication.checkAuthenticated, async (req, res
     })
 })
 
-/**
- * QuizResults: {
-        type: [
-            {
-                Topic: {
-                    type: String,
-                    required: true
-                },
-                ScoreHistory: {
-                    type: [
-                        {
-                            Date: {
-                                type: Date
-                            },
-                            Score: {
-                                type: Number
-                            }
-                        }
-                    ],
-                    required: true
-                },
-                PossibleScore: {
-                    type: Number,
-                    required: true
-                }
-            }
-        ]
-    }
- */
-
+router.get('/specialID', authentication.checkAuthenticated, async (req, res)=> {
+    specialID = (await UserProfile.findById(req.user._id, {SpecialID: 1})).SpecialID
+    console.log(specialID)
+    res.json({
+        SpecialID: specialID
+    })
+})
 
 
 
