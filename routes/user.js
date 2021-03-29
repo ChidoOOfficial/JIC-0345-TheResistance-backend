@@ -292,6 +292,22 @@ router.get('/specialID', authentication.checkAuthenticated, async (req, res)=> {
     })
 })
 
+router.post('/current', authentication.checkAuthenticated, async (req, res)=> {
+    user = await UserProfile.findById(req.user._id, {HashedPassword: 0})
+    console.log(user)
+    res.json({
+        user: user
+    })
+})
+
+router.post('/bySpecialID', authentication.checkAuthenticated, async (req, res)=> {
+    specialID = req.body.SpecialID
+    user = await UserProfile.find({SpecialID: specialID}, {HashedPassword: 0})
+    console.log(user)
+    res.json({
+        user: user
+    })
+})
 
 
 
