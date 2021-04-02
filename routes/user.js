@@ -323,6 +323,33 @@ router.get('/allAssociatedSpecialID', authentication.checkAuthenticated, async (
 
 router.post('/addAssociatedSpecialID', authentication.checkAuthenticated, async (req, res)=> {
     specialID = req.body.specialID
+
+    specialIDs = await UserProfile.find(req.user._id, {StudentSpecialIDList: 1})
+    if (specialIDs.StudentSpecialIDList == null) {
+        specialIDs.StudentSpecialIDList = []
+    }
+
+    StudentSpecialIDList = specialIDs.StudentSpecialIDList
+    for (let i = 0; i < StudentSpecialIDList.length; i++) {
+        if (StudentSpecialIDList[i] == specialID) {
+            array.splice(i, 1);
+            break
+        }
+    }
+
+    StudentSpecialIDList.push(specialID)
+
+    outp = await UserProfile.updateOne({_id: req.user._id  }, { $set: {
+        StudentSpecialIDList: StudentSpecialIDList
+    }})
+
+    res.json({
+        result: outp
+    })
+})
+
+router.post('/removeAssociatedSpecialID', authentication.checkAuthenticated, async (req, res)=> {
+    specialID = req.body.specialID
     
     specialIDs = await UserProfile.find(req.user._id, {StudentSpecialIDList: 1})
     if (specialIDs.StudentSpecialIDList == null) {
@@ -330,7 +357,12 @@ router.post('/addAssociatedSpecialID', authentication.checkAuthenticated, async 
     }
 
     StudentSpecialIDList = specialIDs.StudentSpecialIDList
-    StudentSpecialIDList.push(specialID)
+    for (let i = 0; i < StudentSpecialIDList.length; i++) {
+        if (StudentSpecialIDList[i] == specialID) {
+            array.splice(i, 1);
+            break
+        }
+    }
 
     outp = await UserProfile.updateOne({_id: req.user._id  }, { $set: {
         StudentSpecialIDList: StudentSpecialIDList
