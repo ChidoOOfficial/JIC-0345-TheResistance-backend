@@ -324,11 +324,12 @@ router.post('/addAssociatedSpecialID', authentication.checkAuthenticated, async 
     let specialID = req.body.specialID
 
     let specialIDs = await UserProfile.find(req.user._id, {StudentSpecialIDList: 1})
+
     if (specialIDs.StudentSpecialIDList == null) {
         specialIDs.StudentSpecialIDList = []
     }
-    let oldSSIDList = [...specialIDs.StudentSpecialIDList];
-    let StudentSpecialIDList = specialIDs.StudentSpecialIDList
+    
+    let StudentSpecialIDList = [...specialIDs.StudentSpecialIDList]
     for (let i = 0; i < StudentSpecialIDList.length; i++) {
         if (StudentSpecialIDList[i] == specialID) {
             array.splice(i, 1);
@@ -342,11 +343,14 @@ router.post('/addAssociatedSpecialID', authentication.checkAuthenticated, async 
         StudentSpecialIDList: StudentSpecialIDList
     }})
 
+    let specialIDsFinal = await UserProfile.find(req.user._id, {StudentSpecialIDList: 1})
+
     res.json({
-        result: outp,
         specialID: specialID,
         StudentSpecialIDList: StudentSpecialIDList,
-        oldSSIDList: oldSSIDList
+        specialIDs: specialIDs,
+        specialIDsFinal: specialIDsFinal
+        
     })
 })
 
