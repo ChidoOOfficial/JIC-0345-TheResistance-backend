@@ -315,9 +315,29 @@ router.get('/allAssociatedSpecialID', authentication.checkAuthenticated, async (
         specialIDs.StudentSpecialIDList = []
     }
     console.log(specialIDs)
-    
+
     res.json({
         specialIDs: specialIDs
+    })
+})
+
+router.post('/addAssociatedSpecialID', authentication.checkAuthenticated, async (req, res)=> {
+    specialID = req.body.specialID
+    
+    specialIDs = await UserProfile.find(req.user._id, {StudentSpecialIDList: 1})
+    if (specialIDs.StudentSpecialIDList == null) {
+        specialIDs.StudentSpecialIDList = []
+    }
+
+    StudentSpecialIDList = specialIDs.StudentSpecialIDList
+    StudentSpecialIDList.push(specialID)
+
+    outp = await UserProfile.updateOne({_id: req.user._id  }, { $set: {
+        StudentSpecialIDList: StudentSpecialIDList
+    }})
+
+    res.json({
+        result: outp
     })
 })
 
