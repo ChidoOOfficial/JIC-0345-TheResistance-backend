@@ -314,7 +314,6 @@ router.get('/allAssociatedSpecialID', authentication.checkAuthenticated, async (
     if (specialIDs.StudentSpecialIDList == null) {
         specialIDs.StudentSpecialIDList = []
     }
-    console.log(specialIDs)
 
     res.json({
         specialIDs: specialIDs
@@ -328,9 +327,7 @@ router.post('/addAssociatedSpecialID', authentication.checkAuthenticated, async 
     if (specialIDs.StudentSpecialIDList == null) {
         specialIDs.StudentSpecialIDList = []
     }
-
-    console.log(specialIDs)
-
+    let oldSSIDList = [...specialIDs.StudentSpecialIDList];
     let StudentSpecialIDList = specialIDs.StudentSpecialIDList
     for (let i = 0; i < StudentSpecialIDList.length; i++) {
         if (StudentSpecialIDList[i] == specialID) {
@@ -346,7 +343,10 @@ router.post('/addAssociatedSpecialID', authentication.checkAuthenticated, async 
     }})
 
     res.json({
-        result: outp
+        result: outp,
+        specialID: specialID,
+        StudentSpecialIDList: StudentSpecialIDList,
+        oldSSIDList: oldSSIDList
     })
 })
 
