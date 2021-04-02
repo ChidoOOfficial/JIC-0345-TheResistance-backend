@@ -303,14 +303,14 @@ router.post('/current', authentication.checkAuthenticated, async (req, res)=> {
 router.post('/bySpecialID', authentication.checkAuthenticated, async (req, res)=> {
     specialID = req.body.SpecialID
     user = await UserProfile.find({SpecialID: specialID}, {HashedPassword: 0})
-    console.log(user)
+    
     res.json({
         user: user
     })
 })
 
 router.get('/allAssociatedSpecialID', authentication.checkAuthenticated, async (req, res)=> {
-    specialIDs = await UserProfile.find(req.user._id, {StudentSpecialIDList: 1})
+    specialIDs = await UserProfile.findById(req.user._id, {StudentSpecialIDList: 1})
     if (specialIDs.StudentSpecialIDList == null) {
         specialIDs.StudentSpecialIDList = []
     }
@@ -323,19 +323,17 @@ router.get('/allAssociatedSpecialID', authentication.checkAuthenticated, async (
 router.post('/addAssociatedSpecialID', authentication.checkAuthenticated, async (req, res)=> {
     let specialID = req.body.specialID
 
-    let specialIDs = await UserProfile.find(req.user._id, {StudentSpecialIDList: 1})
-    let isNull = false
-
+    let specialIDs = await UserProfile.findById(req.user._id, {StudentSpecialIDList: 1})
+    
     if (specialIDs.StudentSpecialIDList == null) {
         specialIDs.StudentSpecialIDList = []
-        isNull = true
     }
-
     
     let StudentSpecialIDList = [...specialIDs.StudentSpecialIDList]
+
     for (let i = 0; i < StudentSpecialIDList.length; i++) {
         if (StudentSpecialIDList[i] == specialID) {
-            array.splice(i, 1);
+            StudentSpecialIDList.splice(i, 1);
             break
         }
     }
@@ -346,22 +344,15 @@ router.post('/addAssociatedSpecialID', authentication.checkAuthenticated, async 
         StudentSpecialIDList: StudentSpecialIDList
     }})
 
-    let specialIDsFinal = await UserProfile.find(req.user._id, {StudentSpecialIDList: 1})
-
     res.json({
-        specialID: specialID,
-        StudentSpecialIDList: StudentSpecialIDList,
-        specialIDs: specialIDs,
-        specialIDsFinal: specialIDsFinal,
-        isNull: isNull
-        
+        result: outp
     })
 })
 
 router.post('/removeAssociatedSpecialID', authentication.checkAuthenticated, async (req, res)=> {
     specialID = req.body.specialID
     
-    specialIDs = await UserProfile.find(req.user._id, {StudentSpecialIDList: 1})
+    specialIDs = await UserProfile.findById(req.user._id, {StudentSpecialIDList: 1})
     if (specialIDs.StudentSpecialIDList == null) {
         specialIDs.StudentSpecialIDList = []
     }
