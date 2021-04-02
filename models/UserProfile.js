@@ -46,6 +46,9 @@ const UserProfileSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    StudentSpecialIDList: {
+        type: [String]
+    },
     QuizScores: {
         type: [
             {

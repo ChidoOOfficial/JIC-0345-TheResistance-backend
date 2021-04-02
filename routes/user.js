@@ -309,6 +309,18 @@ router.post('/bySpecialID', authentication.checkAuthenticated, async (req, res)=
     })
 })
 
+router.get('/allAssociatedSpecialID', authentication.checkAuthenticated, async (req, res)=> {
+    specialIDs = await UserProfile.find(req.user._id, {StudentSpecialIDList: 1})
+    if (specialIDs.StudentSpecialIDList == null) {
+        specialIDs.StudentSpecialIDList = []
+    }
+    console.log(specialIDs)
+    
+    res.json({
+        specialIDs: specialIDs
+    })
+})
+
 
 
 module.exports = router;
